@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBL", "DBL\DBL.csproj", "{D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{6703986A-CF30-46E7-997E-D9DBF1DB77EB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MysqlDatabase", "MysqlDatabase", "{00EC7797-B3A7-4DFC-B3FA-D91D2EB26BEC}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\מסמכים\dumps\Dump20240207.sql = ..\..\..\מסמכים\dumps\Dump20240207.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
