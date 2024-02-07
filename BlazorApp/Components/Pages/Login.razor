@@ -1,0 +1,70 @@
+﻿@page "/Login"
+@using Models
+@using DBL
+@inject ShoppingCart shoppingCart
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage MySession
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<!--https://mdbootstrap.com/docs/standard/extended/login/-->
+<!-- Email input -->
+<div class="form-outline mb-4">
+    <input type="email" id="form2Example1" class="form-control" @bind-value="UserEmail" />
+    <label class="form-label" for="form2Example1">Email address</label>
+</div>
+
+<!-- Password input -->
+<div class="form-outline mb-4">
+    <input type="password" id="form2Example2" class="form-control" @bind-value="UserPassword" />
+    <label class="form-label" for="form2Example2">Password</label>
+</div>
+
+<!-- 2 column grid layout for inline styling -->
+<div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+        <!-- Checkbox -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+            <label class="form-check-label" for="form2Example31"> Remember me </label>
+        </div>
+    </div>
+
+    <div class="col">
+        <!-- Simple link -->
+        <a href="#!">Forgot password?</a>
+    </div>
+</div>
+
+<!-- Submit button -->
+<button type="button" class="btn btn-primary btn-block mb-4" @onclick="DoLogin">Sign in</button>
+
+<!-- Register buttons -->
+<div class="text-center">
+    <p>Not a member? <a href="/registration">Register</a></p>
+</div>
+
+
+@code {
+    private string UserEmail = "";
+    private string UserPassword = "";
+    private string s;
+
+    async Task DoLogin()
+    {
+        CustomerDB customerDB = new CustomerDB();
+        Customer c = await customerDB.Login(UserEmail, UserPassword);
+        if (c != null)
+        {
+            await MySession.SetAsync("CustomerObject", c);
+            navigationManager.NavigateTo("/TestLayout");
+        }
+        else
+        {
+            await js.InvokeVoidAsync("alert", $"The email or password you entered does not match!");
+            UserEmail = "";
+            UserPassword = "";
+
+        }
+    }
+}

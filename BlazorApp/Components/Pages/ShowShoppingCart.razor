@@ -1,0 +1,124 @@
+﻿@page "/ShowShoppingCart"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Models
+@using DBL
+@inject ShoppingCart shoppingCart
+@inject IJSRuntime js
+@inject NavigationManager navigationManager
+@inject ProtectedSessionStorage MySession
+
+<div class="m-2">
+    <span class="h1">Shopping Cart</span>
+
+    @if (shoppingCart.ProductList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table w-100" >
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Product Price</th>
+                    <th>Quantity</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ProductsInCart item in shoppingCart.ProductList)
+                {
+                    <tr>
+                        <td><a href="ShowProduct/@item.ProductID.ToString()"> @item.ProductName</a></td>
+                        <td>$@item.ProductPrice</td>
+                        <td><input type="number" @bind-value=item.Quantity /></td>
+                        <td>                           
+                            <button class="btn btn-danger" @onclick="@(() => Delete(@item.ProductID))">Delete</button>
+                        </td>
+                        <td>
+                            <a class="btn btn-success" href="customereEdit/@item.ProductID.ToString()">Edit</a>                            
+                        </td>
+                    </tr>
+                    TotalPayment += item.ProductPrice * item.Quantity;
+               }
+                <tr>
+                    <td style="background-color: lightgoldenrodyellow">Total To Pay:</td>
+                    <td style="background-color: lightgoldenrodyellow"><b>$@TotalPayment.ToString("0.00")</b></td>
+                    <td style="background-color: lightgoldenrodyellow"></td>
+                    <td style="background-color: lightgoldenrodyellow"></td>
+                    <td style="background-color: lightgoldenrodyellow"></td>
+                </tr>
+
+            </tbody>
+        </table>
+    }
+    <button class="btn btn-success" @onclick="PlacetOrder">Place the order</button>
+    
+</div>
+@code {
+
+    private Customer customer = null;
+    private double TotalPayment = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // CustomerDB customerDB = new CustomerDB();
+        // list = (List<Customer>)await customerDB.GetAllAsync();
+
+    }
+
+    async Task Delete(int id)
+    {
+        shoppingCart.ProductList.RemoveAll(r => r.ProductID == id);
+        // CustomerDB customerDB = new CustomerDB();
+        // Customer customer = await customerDB.SelectByPkAsync(id);
+        // if (await js.InvokeAsync<bool>("confirm", $"Do you want to delete {customer.Name}'s Record?"))
+        // {
+        //     await customerDB.DeleteAsync(customer);
+        //     await OnInitializedAsync();
+        // }
+    }
+    async Task PlacetOrder()
+    {
+        var CustomerSession = await MySession.GetAsync<Customer>("CustomerObject");
+        if (CustomerSession.Success)
+        {
+            customer = CustomerSession.Value;
+            OrderDB orderDB = new OrderDB();
+            Order order = new Order();
+            order.ProductsInOrder = shoppingCart.ProductList;
+            order.CustomerDetails = customer;
+            order = await orderDB.InsertGetObjAsync(order);
+            bool ok = true;
+            OrderItemDB orderItemDB = new OrderItemDB();
+            foreach (ProductsInCart item in shoppingCart.ProductList)
+            {
+                OrderItem orderItem = new OrderItem();
+                orderItem.OrderID = order.Id;
+                orderItem.ProductID = item.ProductID;
+                orderItem.Quantity = item.Quantity;
+                bool b = await orderItemDB.InsertAsync(orderItem);
+                if (!b)
+                {
+                    ok = false;
+                }
+            }
+            if (!ok)
+            {
+                await js.InvokeVoidAsync("alert", $"Insert failed! Try again.");
+            }
+            else
+            {
+                shoppingCart.ProductList.Clear();
+                TotalPayment = 0;
+                await js.InvokeVoidAsync("alert", $"Your order has been received");
+            }
+            StateHasChanged();
+        }
+        else
+            navigationManager.NavigateTo("login");
+
+        
+    }
+}

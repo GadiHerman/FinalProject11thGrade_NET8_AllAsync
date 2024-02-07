@@ -1,0 +1,50 @@
+﻿@page "/"
+@using Models
+@using DBL
+@inject ShoppingCart shoppingCart
+@inject IJSRuntime js
+
+<div class="m-2">
+    <span class="h1">Top products in this store</span>
+
+    @if (list == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table w-100">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Product Image</th>
+                    <th>Product Price</th>
+                    <th> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Product item in list)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td><img src="data:image/@item.ProductIMGtype;base64, @System.Convert.ToBase64String((byte[])@item.ProductIMG)" width="200" /></td>
+                        <td>@item.ProductPrice</td>
+                        <td>
+                            <a class="btn btn-success" href="ShowProduct/@item.ProductID.ToString()">Buy this product</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+  
+</div>
+@code {
+    List<Product> list;
+    protected override async Task OnInitializedAsync()
+    {
+        ProductDB productDB = new ProductDB();
+        list = (List<Product>)await productDB.GetBestProductAsync(3);
+        
+    }
+}

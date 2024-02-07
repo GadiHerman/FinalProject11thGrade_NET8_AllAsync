@@ -1,0 +1,54 @@
+﻿@page "/ProductSearch"
+@using Models
+@using DBL
+
+<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+    <input @bind-value="SearchString" type="text" class="form-control m-1" placeholder="Search Product" required autofocus>
+    <div class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+        <button @onclick="SearchBtn" class="btn btn-lg btn-primary btn-block m-2" type="button">Search</button>
+    </div>
+</div>
+
+
+@if (lst == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table w-100">
+        <tr>
+            <th>Product Name</th>
+            <th>Image</th>
+        </tr>
+        @foreach (var item in lst)
+        {
+            <tr>
+                <td><a href="ShowProduct/@item.ProductID.ToString()"> @item.ProductName</a></td>
+                <td><img src="data:image/@item.ProductIMGtype;base64, @System.Convert.ToBase64String((byte[])@item.ProductIMG)" width="200" /></td>
+            </tr>
+
+        }
+    </table>
+}
+
+
+@code {
+    private string SearchString = "";
+    private List<Product> lst;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ProductDB pdb = new ProductDB();
+        lst = (List<Product>)await pdb.GetAllAsync();
+    }
+
+    private async Task SearchBtn()
+    {
+        ProductDB pdb = new ProductDB();
+        lst = (List<Product>)await pdb.ProductSearch(SearchString);
+
+    }
+}
+
+

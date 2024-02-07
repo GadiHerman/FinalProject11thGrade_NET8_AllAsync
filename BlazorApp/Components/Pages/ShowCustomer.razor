@@ -1,0 +1,94 @@
+﻿@page "/customerDetails/{Id:int}"
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
+
+@using Models
+@using DBL
+
+@if (c == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="form-signin w-100 p-3 text-bg-dark">
+        <span class="h5">name: @c.Name</span><br />
+        <span class="h5">email: @c.Email</span>
+    </div>
+}
+<div class="m-2">
+    <span class="h3">your orders:</span>
+
+    @if (orders == null)
+    {
+        <p><em>Loading orders...</em></p>
+    }
+    else
+    {
+        <table class="table w-100">
+            <thead>
+                <tr>
+                    <th>Order Date</th>
+                    <th>Order ID</th>
+                    <th>Products</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Order item in orders)
+                {
+                    <tr>
+                        <td class="w-25">@item.OrderDateTime</td>
+                        <td class="w-25">@item.Id</td>
+                        <td class="w-50">
+
+
+
+                            <table class="table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>ProductName</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (ProductsInCart ProductItem in item.ProductsInOrder)
+                                    {
+                                        <tr>
+                                            <td class="w-75">@ProductItem.ProductName</td>
+                                            <td class="w-25">@ProductItem.Quantity</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+
+
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Customer c = null;
+    private List<Order> orders = null;
+
+    protected override async void OnParametersSet()
+    {
+        if (id == null)
+            id = 0;
+        else
+        {
+            CustomerDB CustomerDB = new CustomerDB();
+            c = (Customer)await CustomerDB.SelectByPkAsync(id);
+
+            OrderDB orderDB = new OrderDB();
+            orders = (List<Order>)await orderDB.GetAllOrdersByCustomerIDAsync(id);
+            StateHasChanged();
+        }
+    }
+}

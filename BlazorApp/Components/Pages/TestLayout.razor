@@ -1,0 +1,32 @@
+﻿@page "/TestLayout"
+@using Models
+@using DBL
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject NavigationManager navigationManager
+@inject ProtectedSessionStorage MySession
+
+<h3>Secret page</h3>
+@if (c != null)
+{
+    <p>Hello @c.Name !!!</p>
+}
+
+
+<p>This is a protected page. Access to this page is only after identification</p>
+
+@code {
+    private Customer c = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var CustomerSession = await MySession.GetAsync<Customer>("CustomerObject");
+        if (CustomerSession.Success)
+        {
+            c = CustomerSession.Value;
+            StateHasChanged();
+        }
+        else
+            navigationManager.NavigateTo("login");
+    }
+}
+
+

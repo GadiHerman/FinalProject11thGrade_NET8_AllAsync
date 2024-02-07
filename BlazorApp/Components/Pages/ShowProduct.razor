@@ -1,0 +1,141 @@
+﻿@page "/ShowProduct/{Id:int}"
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
+@inject ShoppingCart shoppingCart
+@using Models
+@using DBL
+
+@if (p == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <!-- Product section     URL=https://startbootstrap.com/template/shop-item#google_vignette-->
+    <section class="py-1">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="row gx-4 gx-lg-5 align-items-center">
+                <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="data:image/@p.ProductIMGtype;base64, @System.Convert.ToBase64String((byte[])@p.ProductIMG)" alt="@p.ProductName" width="700" height="600" /></div>
+                <div class="col-md-6">
+                    <div class="small mb-1">SKU: BST-@p.ProductID</div>
+                    <h1 class="display-5 fw-bolder">@p.ProductName</h1>
+                    <div class="fs-5 mb-5">
+                        <span class="text-decoration-line-through">$@((Math.Round(p.ProductPrice * 1.2)).ToString("0.00"))</span>
+                        <span>$@p.ProductPrice.ToString("0.00")</span>
+                    </div>
+                    <p class="lead">@p.ProductName</p>
+                    <div class="d-flex">
+                        <input @bind-value="Quantity" class="form-control text-center me-3" id="inputQuantity" type="num" style="max-width: 3rem" />
+                        <button @onclick="() => addToCart(p)" class="btn btn-outline-dark flex-shrink-0" type="button">
+                            <i class="bi-cart-fill me-1"></i>
+                            Add to cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Related items section-->
+    @if (pLst == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+    <section class="py-5 bg-light">
+        <div class="container px-4 px-lg-5 mt-1">
+            <h2 class="fw-bolder mb-4">Related products</h2>
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                @foreach (var item in pLst)
+                {
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <!-- Sale badge-->
+                            <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Best Seller</div>
+                            <!-- Product image-->
+                            <img class="card-img-top mb-5 mb-md-0" src="data:image/@item.ProductIMGtype;base64, @System.Convert.ToBase64String((byte[])@item.ProductIMG)" alt="@item.ProductName" width="450" height="300" />
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder"></h5>
+                                    <!-- Product reviews-->
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                        <div class="bi-star-fill"></div>
+                                    </div>
+                                    <!-- Product price-->
+                                    <span class="text-muted text-decoration-line-through">$@((Math.Round(item.ProductPrice * 1.2)).ToString("0.00"))</span>
+                                    $@(item.ProductPrice.ToString("0.00"))
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                    <button @onclick="() => addToCart(item)" class="btn btn-outline-dark flex-shrink-0" type="button">
+                                        <i class="bi-cart-fill me-1"></i>
+                                        Add to cart
+                                    </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+    } 
+}
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Product p = null;
+    private List<Product> pLst = null;
+    private int Quantity { get; set; } = 1;
+
+    protected override async void OnParametersSet()
+    {
+        if (id == null)
+            id = 0;
+        else
+        {
+            ProductDB productDB = new ProductDB();
+            p = (Product)await productDB.SelectByPkAsync(id);
+            pLst = await productDB.GetBestProductAsync(4);
+            StateHasChanged();
+        }
+    }
+
+    async Task addToCart(Product product)
+    {
+        ProductsInCart pCart = new ProductsInCart(product.ProductID, product.ProductName, product.ProductPrice, Quantity);
+        var reponse = shoppingCart.ProductList.Find(r => r.ProductID == pCart.ProductID);
+        if (reponse==null)
+        {
+            shoppingCart.ProductList.Add(pCart);
+        }
+        else
+        {
+            shoppingCart.ProductList.Single(r => r.ProductID == pCart.ProductID).Quantity += Quantity;  
+        }
+        navigationManager.NavigateTo("/ShowShoppingCart");
+        // CustomerDB customerDB = new CustomerDB();
+        // customer = new Customer();
+        // customer.Name = Name;
+        // customer.Email = Email;
+        // customer.Id = id;
+        // int n = await customerDB.UpdateAsync(customer);
+        // if (n > 0)
+        // {
+        //     await js.InvokeVoidAsync("alert", $"Updated Successfully!");
+        //     navigationManager.NavigateTo("/");
+        // }
+        // else
+        // {
+        //     await js.InvokeVoidAsync("alert", $"Update failed!");
+        //     navigationManager.NavigateTo("/");
+        // }
+    }
+}

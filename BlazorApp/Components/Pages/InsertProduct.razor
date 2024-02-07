@@ -1,0 +1,107 @@
+﻿@page "/InsertProduct"
+@using Models
+@using DBL
+
+<h1>Insert new product</h1>
+<p>
+    Product Name:
+    <input type="text" @bind-value="name" />
+</p>
+<p>
+    Product Price:
+    <input type="number" @bind-value="Price" />
+</p>
+<p>
+    Upload up to @maxFileSize bytes:
+    <InputFile OnChange="@LoadOneFile" />
+</p>
+<p>
+    <button @onclick="UploadFileToServer">Upload and Insert</button>
+</p>
+
+@if (isLoading)
+{
+    <p>Uploading...</p>
+}
+else
+{
+    <p>@message</p>
+    @if (arr != null)
+    {
+        <img src="data:image;base64, @System.Convert.ToBase64String(arr)" />
+    }
+}
+
+
+@code {
+
+    private long maxFileSize = 1024 * 100;
+    private bool isLoading;
+    private string message = "";
+    private string name = "";
+    private double Price = 1.0;
+    private byte[] arr = null;
+    private IBrowserFile file;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task UploadFileToServer()
+    {
+        try
+        {
+            ProductDB pdb = new ProductDB();
+            Product p = new Product();
+
+            p.ProductName = name;
+            p.ProductIMG = arr;
+            p.ProductIMGtype = Path.GetExtension(file.Name);
+            p.ProductURL = "";
+            p.ProductPrice = Price;
+
+            bool b  =(bool)await pdb.InsertAsync(p);
+
+            if (b)
+            {
+                message = $"The file {file.Name} Successfully saved in the database.";
+                await OnInitializedAsync();
+            }
+            else
+            {
+                message = $"Error";
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+
+    }
+
+    private async Task LoadOneFile(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        try
+        {
+            file = e.File;
+
+            MemoryStream ms = new MemoryStream();
+            await e.File.OpenReadStream(maxFileSize).CopyToAsync(ms);
+            arr = ms.ToArray();
+
+            message = $"The file {file.Name} was uploaded successfully.";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+        isLoading = false;
+    }
+}
+
+
