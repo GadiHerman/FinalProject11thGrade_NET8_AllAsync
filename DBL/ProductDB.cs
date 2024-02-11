@@ -16,6 +16,12 @@ namespace DBL
         {
             return "products";
         }
+
+        protected override string GetPrimaryKeyName()
+        {
+            return "ProductID";
+        }
+
         protected override async Task<Product> CreateModelAsync(object[] row)
         {
             Product p = new Product();
@@ -39,17 +45,6 @@ namespace DBL
                 custList.Add(p);
             }
             return custList;
-        }
-
-        protected override async Task<Product> GetRowByPKAsync(object pk)
-        {
-            string sql = @"SELECT Products.* FROM Products WHERE (ProductID = @id)";
-            AddParameterToCommand("@id", int.Parse(pk.ToString()));
-            List<Product> list = (List<Product>)await SelectAllAsync(sql);
-            if (list.Count == 1)
-                return list[0];
-            else
-                return null;
         }
 
         public async Task<List<Product>> GetAllAsync()
@@ -153,7 +148,5 @@ namespace DBL
                                 products.ProductName LIKE concat('%',@s,'%');";
             return (List<Product>)await SelectAllAsync(sql,p);
         }
-
-
     }
 }

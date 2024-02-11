@@ -14,6 +14,11 @@ namespace DBL
             return "Orders";
         }
 
+        protected override string GetPrimaryKeyName()
+        {
+            return "OrderID";
+        }
+
         protected override async Task<Order> CreateModelAsync(object[] row)
         {
             Order order = new Order();
@@ -40,16 +45,6 @@ namespace DBL
             }
             return orderList;
         }
-        protected override async Task<Order> GetRowByPKAsync(object pk)
-        {
-            string sql = @"SELECT orders.* FROM orders WHERE (OrderID = @id)";
-            AddParameterToCommand("@id", int.Parse(pk.ToString()));
-            List<Order> list = (List<Order>)await SelectAllAsync(sql);
-            if (list.Count == 1)
-                return list[0];
-            else
-                return null;
-        }
 
         public async Task<List<Order>> GetAllAsync()
         {
@@ -72,16 +67,6 @@ namespace DBL
             else
                 return null;
         }
-
-        //public async Task<bool> InsertAsync(Order order)
-        //{
-        //    Dictionary<string, object> fillValues = new Dictionary<string, object>();
-        //    DateTime d = DateTime.Now;
-        //    string dts = $"'{d.Year}-{d.Month}-{d.Day} {d.Hour}:{d.Minute}:{d.Second}'";
-        //    fillValues.Add("OrderDateTime", dts);
-        //    fillValues.Add("CustomerID", order.customer.Id.ToString());
-        //    return await base.InsertAsync(fillValues) == 1;
-        //}
 
         public async Task<Order> InsertGetObjAsync(Order order)
         {

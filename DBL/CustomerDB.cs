@@ -15,6 +15,12 @@ namespace DBL
         {
             return "Customers";
         }
+
+        protected override string GetPrimaryKeyName()
+        {
+            return "CustomerID";
+        }
+
         protected override async Task<Customer> CreateModelAsync(object[] row)
         {
             Customer c = new Customer();
@@ -35,17 +41,6 @@ namespace DBL
                 custList.Add(c);
             }
             return custList;
-        }
-
-        protected override async Task<Customer> GetRowByPKAsync(object pk)
-        {
-            string sql = @"SELECT customers.* FROM customers WHERE (CustomerID = @id)";
-            AddParameterToCommand("@id", int.Parse(pk.ToString()));
-            List<Customer> list = (List<Customer>)await SelectAllAsync(sql);
-            if (list.Count == 1)
-                return list[0];
-            else
-                return null;
         }
 
         public async Task<List<Customer>> GetAllAsync()
@@ -154,6 +149,5 @@ namespace DBL
             }
             return returnList;
         }
-
     }
 }

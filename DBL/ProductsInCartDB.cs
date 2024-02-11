@@ -10,12 +10,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace DBL
 {
-    public class ProductsInCartDB : ProductDB //BaseDB<ProductsInCart>
+    public class ProductsInCartDB : ProductDB
     {
-        //protected override string GetTableName()
-        //{
-        //    return "products";
-        //}
         protected override async Task<Product> CreateModelAsync(object[] row)
         {
             Product p = new ProductsInCart();
@@ -50,49 +46,5 @@ namespace DBL
             }
             return pp;
         }
-
-        //protected override async Task<List<Product>> CreateListModelAsync(List<object[]> rows)
-        //{
-        //    List<Product> custList = new List<Product>();
-        //    foreach (object[] item in rows)
-        //    {
-        //        Product p;
-        //        p = (Product)await CreateModelAsync(item);
-        //        custList.Add(p);
-        //    }
-        //    return custList;
-        //}
-
-        //protected override async Task<Product> GetRowByPKAsync(object pk)
-        //{
-        //    string sql = @"SELECT Products.* FROM Products WHERE (ProductID = @id)";
-        //    AddParameterToCommand("@id", int.Parse(pk.ToString()));
-        //    List<Product> list = (List<Product>)await SelectAllAsync(sql);
-        //    if (list.Count == 1)
-        //        return list[0];
-        //    else
-        //        return null;
-        //}
-
-        //public async Task<List<Product>> GetAllAsync()
-        //{
-        //    return ((List<Product>)await SelectAllAsync());
-        //}
-
-
-
-        //public async Task<ProductsInCart> SelectByPkAsync(int id)
-        //{
-        //    string sql = @"SELECT * FROM Products WHERE (ProductID = @id)";
-        //    AddParameterToCommand("@id", id);
-        //    List<Product> list = (List<Product>)await SelectAllAsync(sql);
-        //    if (list.Count == 1)
-        //        return list[0];
-        //    else
-        //        return null;
-        //}
-
-
-
     }
 }

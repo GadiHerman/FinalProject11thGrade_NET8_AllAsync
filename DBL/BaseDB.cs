@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Data.Common;
 
+//Version 3.2
 namespace DBL
 {
     public abstract class BaseDB<T> : DB
     {
         protected abstract string GetTableName();
-        protected abstract Task<T> GetRowByPKAsync(object pk);
+        protected abstract string GetPrimaryKeyName(); 
         protected abstract Task<T> CreateModelAsync(object[] row);
         protected abstract Task<List<T>> CreateListModelAsync(List<object[]> rows);
-
 
         /// <summary>
         /// Add one parameters to Transact-SQL statement.
@@ -95,7 +95,14 @@ namespace DBL
             object res = await ExecScalarAsync(sqlCommand);
             if (res != null)
             {
-                return (object)await GetRowByPKAsync(res);
+                Dictionary<string, object> p = new Dictionary<string, object>();
+                p.Add("id", res.ToString());
+                string sql = @$"SELECT * FROM {GetTableName()} WHERE ({GetPrimaryKeyName()} = @id)";
+                List<T> list = (List<T>)await SelectAllAsync(sql, p);
+                if (list.Count == 1)
+                    return list[0];
+                else
+                    return null;
             }
             else
                 return null;
@@ -289,13 +296,6 @@ namespace DBL
 
         private async Task<List<object[]>> StingListSelectAllAsync(string query, Dictionary<string, object> parameters)
         {
-            //List<object[]> list = new List<object[]>();
-            //string where = PrepareWhereQueryWithParameters(parameters);
-            //string sqlCommand = $"{query} {where}";
-            //if (String.IsNullOrEmpty(query))
-            //    sqlCommand = $"SELECT * FROM {GetTableName()} {where}";
-
-            //----------------------------------------
             List<object[]> list = new List<object[]>();
             string sqlCommand = "";
             if (String.IsNullOrEmpty(query))
@@ -303,7 +303,7 @@ namespace DBL
                 string where = PrepareWhereQueryWithParameters(parameters);
                 sqlCommand = $"SELECT * FROM {GetTableName()} {where}";
             }
-            else if (query.IndexOf("@")>0) //(query.ToLower().IndexOf("where")>0 || query.ToLower().IndexOf("limit") > 0)
+            else if (query.IndexOf("@")>0)
             {
                 sqlCommand = query;
                 foreach (KeyValuePair<string, object> param in parameters)
@@ -316,7 +316,6 @@ namespace DBL
                 string where = PrepareWhereQueryWithParameters(parameters);
                 sqlCommand = $"{query} {where}";
             }
-            //----------------------------------------
             PreQuery(sqlCommand);
             try
             {
