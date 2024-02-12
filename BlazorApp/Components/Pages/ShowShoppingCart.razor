@@ -23,7 +23,6 @@
                     <th>Product Price</th>
                     <th>Quantity</th>
                     <th></th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -32,29 +31,22 @@
                     <tr>
                         <td><a href="ShowProduct/@item.ProductID.ToString()"> @item.ProductName</a></td>
                         <td>$@item.ProductPrice</td>
-                        <td><input type="number" @bind-value=item.Quantity /></td>
+                        <td><input type="number" @bind-value=item.Quantity @onblur="calcTotalPayment" /></td>
                         <td>                           
                             <button class="btn btn-danger" @onclick="@(() => Delete(@item.ProductID))">Delete</button>
                         </td>
-                        <td>
-                            <a class="btn btn-success" href="customereEdit/@item.ProductID.ToString()">Edit</a>                            
-                        </td>
-                    </tr>
-                    TotalPayment += item.ProductPrice * item.Quantity;
+                    </tr>  
                }
                 <tr>
                     <td style="background-color: lightgoldenrodyellow">Total To Pay:</td>
                     <td style="background-color: lightgoldenrodyellow"><b>$@TotalPayment.ToString("0.00")</b></td>
                     <td style="background-color: lightgoldenrodyellow"></td>
                     <td style="background-color: lightgoldenrodyellow"></td>
-                    <td style="background-color: lightgoldenrodyellow"></td>
                 </tr>
-
             </tbody>
         </table>
     }
     <button class="btn btn-success" @onclick="PlacetOrder">Place the order</button>
-    
 </div>
 @code {
 
@@ -63,21 +55,23 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // CustomerDB customerDB = new CustomerDB();
-        // list = (List<Customer>)await customerDB.GetAllAsync();
+        calcTotalPayment();
+    }
 
+    async Task calcTotalPayment()
+    {
+        TotalPayment = 0;
+        foreach (var item in shoppingCart.ProductList)
+        {
+            TotalPayment += item.ProductPrice * item.Quantity;
+        }
+        
     }
 
     async Task Delete(int id)
     {
         shoppingCart.ProductList.RemoveAll(r => r.ProductID == id);
-        // CustomerDB customerDB = new CustomerDB();
-        // Customer customer = await customerDB.SelectByPkAsync(id);
-        // if (await js.InvokeAsync<bool>("confirm", $"Do you want to delete {customer.Name}'s Record?"))
-        // {
-        //     await customerDB.DeleteAsync(customer);
-        //     await OnInitializedAsync();
-        // }
+        calcTotalPayment();
     }
     async Task PlacetOrder()
     {
@@ -117,8 +111,6 @@
             StateHasChanged();
         }
         else
-            navigationManager.NavigateTo("login");
-
-        
+            navigationManager.NavigateTo("login/formShowShoppingCart");
     }
 }

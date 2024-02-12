@@ -1,4 +1,5 @@
 ﻿@page "/Login"
+@page "/Login/{fromStr}"
 @using Models
 @using DBL
 @inject ShoppingCart shoppingCart
@@ -46,9 +47,18 @@
 
 
 @code {
+    [Parameter] public string fromStr { get; set; }
     private string UserEmail = "";
     private string UserPassword = "";
-    private string s;
+    private string navTo="/";
+    protected override async void OnParametersSet()
+    {
+        if (fromStr != null)
+        {
+            if (fromStr == "formShowShoppingCart")
+                navTo = "/ShowShoppingCart";
+        }
+    }
 
     async Task DoLogin()
     {
@@ -57,7 +67,7 @@
         if (c != null)
         {
             await MySession.SetAsync("CustomerObject", c);
-            navigationManager.NavigateTo("/TestLayout");
+            navigationManager.NavigateTo(navTo);
         }
         else
         {
