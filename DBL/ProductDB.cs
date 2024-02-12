@@ -111,9 +111,9 @@ namespace DBL
 
         public async Task<Product> SelectByPkAsync(int id)
         {
-            string sql = @"SELECT * FROM Products WHERE (ProductID = @id)";
-            AddParameterToCommand("@id", id);
-            List<Product> list = (List<Product>)await SelectAllAsync(sql);
+            Dictionary<string, object> p = new Dictionary<string, object>();
+            p.Add("ProductID", id);
+            List<Product> list = await SelectAllAsync(p);
             if (list.Count == 1)
                 return list[0];
             else

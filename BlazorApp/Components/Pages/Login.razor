@@ -52,7 +52,7 @@
 
     async Task DoLogin()
     {
-        CustomerDB customerDB = new CustomerDB();
+        CustomerPasswordDB customerDB = new CustomerPasswordDB();
         Customer c = await customerDB.Login(UserEmail, UserPassword);
         if (c != null)
         {

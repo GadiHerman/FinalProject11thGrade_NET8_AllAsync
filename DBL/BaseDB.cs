@@ -13,20 +13,6 @@ namespace DBL
         protected abstract Task<List<T>> CreateListModelAsync(List<object[]> rows);
 
         /// <summary>
-        /// Add one parameters to Transact-SQL statement.
-        /// </summary>
-        /// <param name="name">Parameter name example:@id</param>
-        /// <param name="value">Parameter value</param>
-        protected void AddParameterToCommand(string name, object value)
-        {
-            DbParameter p = cmd.CreateParameter();
-            p.ParameterName = name;
-            p.Value = value;
-            cmd.Parameters.Add(p);
-        }
-
-        /// <summary>
-        /// asynchronous version of SelectAll
         /// A generic operation to retrieve ALL data from the database.
         /// </summary>
         /// <returns>List of Objects</returns>
@@ -36,7 +22,6 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of SelectAll
         /// A generic operation to retrieve data from the database.
         /// </summary>
         /// <param name="parameters">Dictionary (Key & Value)</param>
@@ -47,7 +32,6 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of SelectAll
         /// A generic operation to retrieve data from the database.
         /// </summary>
         /// <param name="query">SQL string</param>
@@ -58,7 +42,6 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of SelectAll
         /// A generic operation to retrieve data from the database.
         /// </summary>
         /// <param name="query">SQL string</param>
@@ -71,8 +54,7 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of Insert
-        /// insert new records in a table using INSERT Statement.
+        /// Insert new records in a table using INSERT Statement.
         /// </summary>
         /// <param name="keyAndValue">Dictionary (Key & Value)</param>
         /// <returns>The number of rows affected.</returns>
@@ -83,8 +65,7 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of InsertGetObj
-        /// insert new records in a table using INSERT Statement.
+        /// Insert new records in a table using INSERT Statement.
         /// </summary>
         /// <param name="keyAndValue">Dictionary (Key & Value)</param>
         /// <returns>An object that includes the ID attribute from the database.</returns>
@@ -109,7 +90,6 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of Update
         /// Update records in a table using SQL UPDATE Statement.
         /// </summary>
         /// <param name="FildValue">Dictionary (Key & Value)</param>
@@ -128,7 +108,6 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of Delete
         /// Delete records in a table using SQL DELETE Statement.
         /// </summary>
         /// <param name="parameters">Dictionary (Key & Value)</param>
@@ -142,9 +121,22 @@ namespace DBL
         }
 
         /// <summary>
+        /// Add one parameters to SQL statement.
+        /// </summary>
+        /// <param name="name">Parameter name example:@id</param>
+        /// <param name="value">Parameter value</param>
+        private void AddParameterToCommand(string name, object value)
+        {
+            DbParameter p = cmd.CreateParameter();
+            p.ParameterName = name;
+            p.Value = value;
+            cmd.Parameters.Add(p);
+        }
+
+        /// <summary>
         /// Prepare command and Connection before executing SQL command
         /// </summary>
-        /// <example>DELETE FROM Customers WHERE CustomerID = 17</example>
+        /// <example>string query = "DELETE FROM Customers WHERE CustomerID = 17"</example>
         /// <param name="query">SQL query string</param>
         private void PreQuery(string query)
         {
@@ -161,7 +153,7 @@ namespace DBL
         private void PostQuery()
         {
             if (reader != null && !reader.IsClosed)
-                reader?.Close();
+                reader.Close();
 
             cmd.Parameters.Clear();
             if (DB.conn.State == System.Data.ConnectionState.Open)
@@ -169,7 +161,7 @@ namespace DBL
         }
 
         /// <summary>
-        /// Prepare SQL Where closure from the given paremeters dictionary
+        /// Prepare a WHERE SQL Query, from given paremeters dictionary
         /// </summary>
         /// <param name="parameters">Dictionary (Key & Value)</param>
         /// <example>Where p1=v1 AND p2=v2</example>
@@ -182,7 +174,6 @@ namespace DBL
             {
                 foreach (KeyValuePair<string, object> param in parameters)
                 {
-                    //where += $"{param.Key} = {param.Value} {AND} ";
                     string prm = $"@W{param.Key}";
                     where += $"{param.Key}={prm} {AND} ";
                     AddParameterToCommand(prm, param.Value);
@@ -241,7 +232,7 @@ namespace DBL
         }
 
         /// <summary>
-        /// asynchronous version of ExecNonQuery
+        /// Executes the command against its connection object, returning the number of rows affected. 
         /// </summary>
         /// <param name="query">SQL string</param>
         /// <example>DELETE FROM Customers WHERE CustomerID = 17</example>
@@ -268,12 +259,11 @@ namespace DBL
         }
 
         /// <summary>
-        /// TESTED asynchronous version of ExecScalar
         /// Executes the query, and returns the first column of the first row in the result
         /// </summary>
         /// <param name="query">SQL string</param>
         /// <returns>The first column of the first row in the result set, or a null.</returns>
-        protected async Task<object> ExecScalarAsync(string query)
+        private async Task<object> ExecScalarAsync(string query)
         {
             if (String.IsNullOrEmpty(query))
                 return null;
@@ -294,6 +284,12 @@ namespace DBL
             return obj;
         }
 
+        /// <summary>
+        /// Prepare the main WHERE SQL Query, from given paremeters dictionary
+        /// </summary>
+        /// <param name="query">SQL string</param>
+        /// <param name="parameters">Dictionary (Key & Value)</param>
+        /// <returns>List of Objects</returns>
         private async Task<List<object[]>> StingListSelectAllAsync(string query, Dictionary<string, object> parameters)
         {
             List<object[]> list = new List<object[]>();

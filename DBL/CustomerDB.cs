@@ -78,44 +78,11 @@ namespace DBL
             return await base.DeleteAsync(filterValues);
         }
 
-        public async Task<int> updatePasswordAsync(Customer customer, string password)
-        {
-            Dictionary<string, object> fillValues = new Dictionary<string, object>();
-            Dictionary<string, object> filterValues = new Dictionary<string, object>();
-            fillValues.Add("Name", customer.Name);
-            fillValues.Add("Email", customer.Email);
-            fillValues.Add("CustomerPassword", password);
-            filterValues.Add("CustomerID", customer.Id.ToString());
-            return await base.UpdateAsync(fillValues, filterValues);
-        }
-
-        public async Task<string> GetPasswordAsync(int id)
-        {
-            string sql = @"SELECT customers.CustomerPassword FROM customers WHERE (CustomerID = @id)";
-            AddParameterToCommand("@id", id);
-            string oldPassword = (string)await ExecScalarAsync(sql);
-            return oldPassword;
-        }
-
-        public async Task<Customer> Login(string email, string password)
-        {
-            string sql = @"SELECT * FROM mystore.customers where Email=@email AND CustomerPassword=@password;";
-            Dictionary<string, object> p = new Dictionary<string, object>();
-            p.Add("email", email);
-            p.Add("password", password);
-            List<Customer> list = (List<Customer>)await SelectAllAsync(sql,p);
-            if (list.Count == 1)
-                return list[0];
-            else
-                return null;
-        }
-
-
         public async Task<Customer> SelectByPkAsync(int id)
         {
-            string sql = @"SELECT customers.* FROM customers WHERE (CustomerID = @id)";
-            AddParameterToCommand("@id", id);
-            List<Customer> list = (List<Customer>)await SelectAllAsync(sql);
+            Dictionary<string, object> p = new Dictionary<string, object>();
+            p.Add("CustomerID", id);
+            List<Customer> list = (List<Customer>)await SelectAllAsync(p);
             if (list.Count == 1)
                 return list[0];
             else
