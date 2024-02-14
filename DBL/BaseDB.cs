@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 
-//Version 3.2
+//Version 3.3
 namespace DBL
 {
     public abstract class BaseDB<T> : DB
@@ -138,7 +138,7 @@ namespace DBL
         /// </summary>
         /// <example>string query = "DELETE FROM Customers WHERE CustomerID = 17"</example>
         /// <param name="query">SQL query string</param>
-        private async Task PreQuery(string query)
+        private async Task PreQueryAsync(string query)
         {
             cmd.CommandText = query;
             if (DB.conn.State != System.Data.ConnectionState.Open)
@@ -150,7 +150,7 @@ namespace DBL
         /// <summary>
         /// Make cleanup after sql command was executed
         /// </summary>
-        private async Task PostQuery()
+        private async Task PostQueryAsync()
         {
             if (reader != null && !reader.IsClosed)
                 await reader.CloseAsync();
@@ -241,7 +241,7 @@ namespace DBL
         {
             if (String.IsNullOrEmpty(query))
                 return 0;
-            await PreQuery(query);
+            await PreQueryAsync(query);
             int rowsEffected = 0;
             try
             {
@@ -253,7 +253,7 @@ namespace DBL
             }
             finally
             {
-                await PostQuery();
+                await PostQueryAsync();
             }
             return rowsEffected;
         }
@@ -267,7 +267,7 @@ namespace DBL
         {
             if (String.IsNullOrEmpty(query))
                 return null;
-            await PreQuery(query);
+            await PreQueryAsync(query);
             object obj = null;
             try
             {
@@ -279,7 +279,7 @@ namespace DBL
             }
             finally
             {
-                await PostQuery();
+                await PostQueryAsync();
             }
             return obj;
         }
@@ -312,7 +312,7 @@ namespace DBL
                 string where = PrepareWhereQueryWithParameters(parameters);
                 sqlCommand = $"{query} {where}";
             }
-            await PreQuery(sqlCommand);
+            await PreQueryAsync(sqlCommand);
             try
             {
                 reader = await cmd.ExecuteReaderAsync();
@@ -333,7 +333,7 @@ namespace DBL
             }
             finally
             {
-                await PostQuery();
+                await PostQueryAsync();
             }
             return list;
         }

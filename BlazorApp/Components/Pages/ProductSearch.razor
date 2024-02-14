@@ -46,7 +46,7 @@ else
     private async Task SearchBtn()
     {
         ProductDB pdb = new ProductDB();
-        lst = (List<Product>)await pdb.ProductSearch(SearchString);
+        lst = (List<Product>)await pdb.ProductSearchAsync(SearchString);
 
     }
 }

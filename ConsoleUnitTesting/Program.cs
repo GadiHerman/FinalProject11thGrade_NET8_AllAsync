@@ -25,7 +25,7 @@ namespace ConsoleUnitTesting
             await Console.Out.WriteLineAsync("\n\n");
             
             //TEST Get Customer by OrderID
-            customer = await db.GetCustomerByOrderID(1);
+            customer = await db.GetCustomerByOrderIDAsync(1);
             await Console.Out.WriteLineAsync($" OrderID=1 id: {customer.Id} name: {customer.Name} email: {customer.Email}\n\n");
 
             //TEST CustomerDB Get by id
@@ -36,7 +36,7 @@ namespace ConsoleUnitTesting
             }
 
             //TEST Get data from DB When there is no data structure ready 
-            List<(string, string)> lst = await db.GetNameAndEmail4NonAdmins();  
+            List<(string, string)> lst = await db.GetNameAndEmail4NonAdminsAsync();  
             foreach (var item in lst)
             {
                 await Console.Out.WriteAsync($" {item.Item1} - {item.Item2}  \n");
