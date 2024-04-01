@@ -89,7 +89,7 @@ namespace DBL
                 return null;
         }
 
-        public async Task<Customer> GetCustomerByOrderID(int orderID)
+        public async Task<Customer> GetCustomerByOrderIDAsync(int orderID)
         {
             string sql = @$"Select mystore.customers.*
                            From mystore.customers Inner Join mystore.orders 
@@ -103,7 +103,7 @@ namespace DBL
                 return null;
         }
 
-        public async Task<List<(string, string)>> GetNameAndEmail4NonAdmins()
+        public async Task<List<(string, string)>> GetNameAndEmail4NonAdminsAsync()
         {
             List<(string, string)> returnList = new List<(string, string)>();
             string sql = "select * from Customers";

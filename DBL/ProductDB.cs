@@ -136,7 +136,7 @@ namespace DBL
             return (List<Product>)await SelectAllAsync(sql,p);
         }
 
-        public async Task<List<Product>> ProductSearch(string SearchString)
+        public async Task<List<Product>> ProductSearchAsync(string SearchString)
         {
             Dictionary<string, object> p = new Dictionary<string, object>();
             p.Add("s", SearchString);

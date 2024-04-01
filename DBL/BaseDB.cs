@@ -141,8 +141,8 @@ namespace DBL
         private async Task PreQueryAsync(string query)
         {
             cmd.CommandText = query;
-            if (DB.conn.State != System.Data.ConnectionState.Open)
-                await DB.conn.OpenAsync();
+            if (conn.State != System.Data.ConnectionState.Open)
+                await conn.OpenAsync();
             if (cmd.Connection.State != System.Data.ConnectionState.Open)
                 cmd.Connection = conn;
         }
@@ -156,8 +156,8 @@ namespace DBL
                 await reader.CloseAsync();
 
             cmd.Parameters.Clear();
-            if (DB.conn.State == System.Data.ConnectionState.Open)
-                await DB.conn.CloseAsync();
+            if (conn.State == System.Data.ConnectionState.Open)
+                await conn.CloseAsync();
         }
 
         /// <summary>

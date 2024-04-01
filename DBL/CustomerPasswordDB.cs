@@ -45,7 +45,7 @@ namespace DBL
             return await base.UpdateAsync(fillValues, filterValues);
         }
 
-        public async Task<Customer> Login(string email, string password)
+        public async Task<Customer> LoginAsync(string email, string password)
         {
             string sql = @"SELECT * FROM mystore.customers where Email=@email AND CustomerPassword=@password;";
             Dictionary<string, object> p = new Dictionary<string, object>();
