@@ -12,7 +12,7 @@ namespace DBL
                                     persistsecurityinfo=True;
                                     database=mystore";
 
-        protected static DbConnection conn;
+        protected DbConnection conn;
         protected DbCommand cmd;
         protected DbDataReader reader;
 

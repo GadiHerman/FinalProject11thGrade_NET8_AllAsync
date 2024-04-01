@@ -141,10 +141,10 @@ namespace DBL
         private void PreQuery(string query)
         {
             cmd.CommandText = query;
-            if (DB.conn.State != System.Data.ConnectionState.Open)
-                DB.conn.Open();
+            if (conn.State != System.Data.ConnectionState.Open)
+                conn.Open();
             if (cmd.Connection.State != System.Data.ConnectionState.Open)
-                cmd.Connection = DB.conn;
+                cmd.Connection = conn;
         }
 
         /// <summary>
@@ -156,8 +156,8 @@ namespace DBL
                 reader.Close();
 
             cmd.Parameters.Clear();
-            if (DB.conn.State == System.Data.ConnectionState.Open)
-                DB.conn.Close();
+            if (conn.State == System.Data.ConnectionState.Open)
+                conn.Close();
         }
 
         /// <summary>
