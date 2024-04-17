@@ -2,6 +2,33 @@
 @using Models
 @using DBL
 
+<div class="pb-3 mb-4 border-bottom">
+
+    <div class="d-inline-flex mt-2 mt-md-0 ms-md-auto ">
+        @if (typelst == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <table class="table w-100">
+                <tr>
+                    <th>Type Name</th>
+                    <th>Quantity</th>
+                </tr>
+                @foreach (var item in typelst)
+                {
+                    <tr>
+                        <td width ="200"> @item.TypeName</td>
+                        <td>  @item.QuantityInCategory</td>
+                    </tr>
+
+                }
+            </table>
+        }
+    </div>
+</div>
+
 <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
     <input @bind-value="SearchString" type="text" class="form-control m-1" placeholder="Search Product" required autofocus>
     <div class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
@@ -36,11 +63,14 @@ else
 @code {
     private string SearchString = "";
     private List<Product> lst;
+    private List<Producttype> typelst;
 
     protected override async Task OnInitializedAsync()
     {
         ProductDB pdb = new ProductDB();
         lst = (List<Product>)await pdb.GetAllAsync();
+        ProducttypeDB ptdb = new ProducttypeDB();
+        typelst = (List<Producttype>)await ptdb.GetAllWithQuantityAsync();
     }
 
     private async Task SearchBtn()
