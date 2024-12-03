@@ -9,18 +9,6 @@ namespace DBL
 {
     public class ProducttypeDB : BaseDB<Producttype>
     {
-        protected override async Task<List<Producttype>> CreateListModelAsync(List<object[]> rows)
-        {
-            List<Producttype> typeList = new List<Producttype>();
-            foreach (object[] item in rows)
-            {
-                Producttype p;
-                p = (Producttype)await CreateModelAsync(item);
-                typeList.Add(p);
-            }
-            return typeList;
-        }
-
         protected override async Task<Producttype> CreateModelAsync(object[] row)
         {
             Producttype p = new Producttype();

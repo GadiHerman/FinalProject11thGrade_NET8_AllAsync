@@ -35,18 +35,6 @@ namespace DBL
             return p;
         }
 
-        protected override async Task<List<Product>> CreateListModelAsync(List<object[]> rows)
-        {
-            List<Product> custList = new List<Product>();
-            foreach (object[] item in rows)
-            {
-                Product p;
-                p = (Product)await CreateModelAsync(item);
-                custList.Add(p);
-            }
-            return custList;
-        }
-
         public async Task<List<Product>> GetAllAsync()
         {
             return ((List<Product>)await SelectAllAsync());

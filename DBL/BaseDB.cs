@@ -10,7 +10,19 @@ namespace DBL
         protected abstract string GetTableName();
         protected abstract string GetPrimaryKeyName(); 
         protected abstract Task<T> CreateModelAsync(object[] row);
-        protected abstract Task<List<T>> CreateListModelAsync(List<object[]> rows);
+        protected async virtual Task<List<T>> CreateListModelAsync(List<object[]> rows)
+        {
+            List<T> listDTOs = new List<T>();
+            foreach (object[] row in rows)
+            {
+                T dto = (T)await CreateModelAsync(row);
+                if (dto != null)
+                {
+                    listDTOs.Add(dto);
+                }
+            }
+            return listDTOs;
+        }
 
         /// <summary>
         /// A generic operation to retrieve ALL data from the database.

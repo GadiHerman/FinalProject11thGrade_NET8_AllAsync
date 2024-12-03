@@ -29,18 +29,6 @@ namespace DBL
             return orderItem;
         }
 
-        protected override async Task<List<OrderItem>> CreateListModelAsync(List<object[]> rows)
-        {
-            List<OrderItem> orderList = new List<OrderItem>();
-            foreach (object[] item in rows)
-            {
-                OrderItem orderItem = new OrderItem();
-                orderItem = (OrderItem)await CreateModelAsync(item);
-                orderList.Add(orderItem);
-            }
-            return orderList;
-        }
-
         public async Task<bool> InsertAsync(OrderItem orderItem)
         {
             Dictionary<string, object> fillValues = new Dictionary<string, object>();

@@ -34,18 +34,6 @@ namespace DBL
             return order;
         }
 
-        protected override async Task<List<Order>> CreateListModelAsync(List<object[]> rows)
-        {
-            List<Order> orderList = new List<Order>();
-            foreach (object[] item in rows)
-            {
-                Order o = new Order();
-                o = (Order)await CreateModelAsync(item);
-                orderList.Add(o);
-            }
-            return orderList;
-        }
-
         public async Task<List<Order>> GetAllAsync()
         {
             return (List<Order>)await SelectAllAsync();
