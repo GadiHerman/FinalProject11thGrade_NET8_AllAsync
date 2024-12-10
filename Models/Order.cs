@@ -11,7 +11,6 @@ namespace Models
         public int Id { get; set; }
         public DateTime OrderDateTime { get; set; }
         public List<ProductsInCart> ProductsInOrder { get; set; }
-
         public Customer CustomerDetails { get; set; }
 
         public Order() { }
