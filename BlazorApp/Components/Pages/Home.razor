@@ -7,7 +7,7 @@
 <div class="m-2">
     <span class="h1">Top products in this store</span>
 
-    @if (list == null)
+    @if (ProductList == null)
     {
         <p><em>Loading...</em></p>
     }
@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (Product item in list)
+                @foreach (Product item in ProductList)
                 {
                     <tr>
                         <td>@item.ProductName</td>
@@ -37,14 +37,47 @@
             </tbody>
         </table>
     }
-  
 </div>
+
+<div class="m-2">
+    <span class="h3">Best-selling products</span>
+
+    @if (ProductPresentationList == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table w-100">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th class="w-25">Quantity sold</th>
+                    <th> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ProductPresentation item in ProductPresentationList)
+                {
+                    <tr>
+                        <td>@item.ProductType : @item.ProductName</td>
+                        <td>@item.QuantitySold.ToString()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
 @code {
-    List<Product> list;
+    List<Product> ProductList;
+    List<ProductPresentation> ProductPresentationList;
     protected override async Task OnInitializedAsync()
     {
+        GenericDB genericDB = new GenericDB();
+        ProductPresentationList = await genericDB.GetBestProductList();
         ProductDB productDB = new ProductDB();
-        list = (List<Product>)await productDB.GetBestProductAsync(3);
+        ProductList = (List<Product>)await productDB.GetBestProductAsync(3);
         
     }
 }
