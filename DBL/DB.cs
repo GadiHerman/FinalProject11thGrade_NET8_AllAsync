@@ -8,7 +8,7 @@ namespace DBL
 
         private const string MySqlConnSTR = @"server=localhost;
                                     user id=root;
-                                    password=1234;
+                                    password=<<----password---->>;
                                     persistsecurityinfo=True;
                                     database=mystore";
 
