@@ -81,7 +81,7 @@ namespace DBL
         /// </summary>
         /// <param name="keyAndValue">Dictionary (Key & Value)</param>
         /// <returns>An object that includes the ID attribute from the database.</returns>
-        protected async Task<object> InsertGetObjAsync(Dictionary<string, object> keyAndValue)
+        protected async Task<T> InsertGetObjAsync(Dictionary<string, object> keyAndValue)
         {
             string sqlCommand = PrepareInsertQueryWithParameters(keyAndValue);
             sqlCommand += $" SELECT LAST_INSERT_ID();";
@@ -95,10 +95,10 @@ namespace DBL
                 if (list.Count == 1)
                     return list[0];
                 else
-                    return null;
+                    return default;
             }
             else
-                return null;
+                return default;
         }
 
         /// <summary>
